@@ -13,6 +13,7 @@ from urlparse import parse_qs
 from bencode import encode
 from simpledb import Database
 
+
 def decode_request(path):
 	""" Return the decoded request string. """
 
@@ -93,6 +94,11 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 		add_peer(s.server.torrents, info_hash, peer_id, ip, port)
 
+		# Add agents to every torrent
+		global AGENTS
+		for agent in AGENTS:
+			add_peer(s.server.torrents, info_hash, peer_id, **agent)
+
 		# Generate a response
 		response = {}
 		response["interval"] = s.server.interval
@@ -116,7 +122,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 		return
 
 class Tracker():
-	def __init__(self, host = "", port = 9010, interval = 5, \
+	def __init__(self, host = "", port = 10010, interval = 5, \
 		torrent_db = "tracker.db", log = "tracker.log", \
 		inmemory = True):
 		""" Read in the initial values, load the database. """
